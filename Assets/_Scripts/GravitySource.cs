@@ -14,13 +14,13 @@ public class GravitySource : MonoBehaviour
 	{
 		var directionVector = (transform.position - target.transform.position);
 		var distanceSquare = Mathf.Pow(directionVector.magnitude, 2);
-		var gravity = directionVector.normalized * target.mass * this._gravity / distanceSquare;
+		var gravity = directionVector.normalized * target.mass * Gravity / distanceSquare;
 		if (gravity.magnitude > 0) target.AddForce(gravity);
 
 		//var source = transform;
 		//Debug.Log($"{source.name} pulls {target.name} with {gravity.magnitude * 10} force", source);
 	}
-	private void FixedUpdate()
+	protected void FixedUpdate()
 	{
 		foreach (var target in GameObject.FindGameObjectsWithTag("GravityTarget"))
 		{

@@ -1,21 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Satellite : MonoBehaviour
 {
 	[SerializeField]
 	private Transform rotationCenter;
 
-	[SerializeField]
-	private float speed;
+	[SerializeField][FormerlySerializedAs("orbitalSpeed")]
+	private float orbitalSpeed;
 
 	[SerializeField]
-	private bool clockwise;
+	[FormerlySerializedAs("clockwise")]
+	private bool orbitClockwise;
 
 	private Rigidbody rb;
 
-	private float angle;
+	private float orbitAngle;
 
 	public Vector3 Velocity => rb.velocity;
 
@@ -32,16 +34,16 @@ public class Satellite : MonoBehaviour
 	private void CalculateAngle()
 	{
 		var gravityVector = rotationCenter.position - transform.position;
-		angle = Vector2.SignedAngle(Vector3.right, -gravityVector);
+		orbitAngle = Vector2.SignedAngle(Vector3.right, -gravityVector);
 	}
 
 	private void FixedUpdate()
 	{
 		var gravityVector = rotationCenter.position - transform.position;
-		var normalizedPosition = new Vector3(Mathf.Cos(angle * Mathf.PI / 180), Mathf.Sin(angle * Mathf.PI / 180));
+		var normalizedPosition = new Vector3(Mathf.Cos(orbitAngle * Mathf.PI / 180), Mathf.Sin(orbitAngle * Mathf.PI / 180));
 		var newPosition = rotationCenter.position + gravityVector.magnitude * normalizedPosition;
+		orbitAngle += orbitClockwise ? -orbitalSpeed : orbitalSpeed;
 		rb.MovePosition(newPosition);
-		angle += (clockwise ? -speed : speed);
 	}
 
 	private void OnDrawGizmos()

@@ -6,7 +6,7 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
 	private const float NOT_MOVING_TRESHOLD = 0.05f;
-
+	private const float APPLY_FORCE_THRESHOLD = 0.5f;
 	[SerializeField]
 	private LineRenderer lineRenderer;
 
@@ -39,26 +39,42 @@ public class Ball : MonoBehaviour
 	private BallPosition lastPos;
 
 	private float? lastDistanceToPlanet;
-	
-	
+	private float? distanceToPlanet;
 
-	private void Awake()
+	private bool GamePaused => LevelController.instance.GamePaused;
+
+	private void Start()
 	{
 		lastPos = startPos.Copy;
+		LevelController.instance.Ball = this;
 	}
 
 	private void OnMouseDown()
 	{
+		if (GamePaused) return;
+
 		clicked = true;
 	}
 
 	private void OnMouseUp()
 	{
+		if (GamePaused) return;
+
 		lineRenderer.enabled = false;
 
-		rb.AddForce(hitVector * forceMultiplier);
-		hitVector = Vector3.zero;
+		if (hitVector.magnitude > APPLY_FORCE_THRESHOLD)
+		{
+			rb.AddForce(hitVector * forceMultiplier);
+			LevelController.instance.IncreaseHitCounter();
+		}
+		ResetHit();
 		clicked = false;
+	}
+
+	private void ResetHit()
+	{
+		hitVector = Vector3.zero;
+		LevelController.instance.SetHitPower(0);
 	}
 
 	private void OnCollisionStay(Collision collision)
@@ -71,23 +87,51 @@ public class Ball : MonoBehaviour
 		activeCollision = null;
 	}
 
+	private void FixedUpdate()
+	{
+		rb.MovePosition(rb.position * Vector2.one); // pull ball to cord z=0
+	}
+
 	private void Update()
 	{
+		if (GamePaused)
+		{
+			if (clicked)
+			{
+				lineRenderer.enabled = false;
+				ResetHit();
+				clicked = false;
+			}
+			return;
+		}
+
+		UpdateBallSpawnPoint();
+		UpdateHitVector();
+		UpdateHitLine();
+		RenderBallIndicator();
+		lastDistanceToPlanet = distanceToPlanet;
+	}
+
+	private void UpdateBallSpawnPoint()
+	{
 		Planet planet = activeCollision?.GetComponent<Planet>();
-		bool onSafePlanet = !planet?.DestroysBall ?? false;
-		float? distanceToPlanet = (planet?.transform.position - transform.position)?.magnitude;
+		bool isCheckpoint = planet?.BallCheckpoint ?? false;
+		distanceToPlanet = (planet?.transform.position - transform.position)?.magnitude;
 		bool notMoving = lastDistanceToPlanet - distanceToPlanet < NOT_MOVING_TRESHOLD;
 
-		stand = onSafePlanet && notMoving;
+		stand = isCheckpoint && notMoving;
 
 		// save new checkpoint
 		if (stand)
 		{
 			lastPos.planet = planet;
-			lastPos.relativePos = planet.transform.InverseTransformPoint(transform.position);
+			lastPos.relativePos = transform.position - planet.transform.position;
+			lastPos.relativePos.z = 0; // resets influence of planet rotation 
 		}
+	}
 
-		// draw hit line
+	private void UpdateHitVector()
+	{
 		if (clicked && stand)
 		{
 			lineRenderer.enabled = true;
@@ -101,13 +145,15 @@ public class Ball : MonoBehaviour
 			{
 				hitVector = hitVector.normalized * maxHitLineLength;
 			}
-
-			lineRenderer.SetPosition(0, transform.position);
-			lineRenderer.SetPosition(1, transform.position + hitVector);
+			float hitPower = hitVector.magnitude > APPLY_FORCE_THRESHOLD ? hitVector.magnitude : 0;
+			LevelController.instance.SetHitPower(hitPower);
 		}
-		lastDistanceToPlanet = distanceToPlanet;
+	}
 
-		RenderBallIndicator();
+	private void UpdateHitLine()
+	{
+		lineRenderer.SetPosition(0, transform.position);
+		lineRenderer.SetPosition(1, transform.position + hitVector);
 	}
 
 	public void RestoreLastPosition()
@@ -139,10 +185,10 @@ public class Ball : MonoBehaviour
 
 	public void RestoreStartPosition()
 	{
+		rb.velocity = Vector3.zero;
 		gameObject.SetActive(true);
 		rb.MovePosition(startPos.Position);
 		lastPos = startPos.Copy;
-		rb.velocity = Vector3.zero;
 	}
 
 	[Serializable]
@@ -161,6 +207,6 @@ public class Ball : MonoBehaviour
 
 		public BallPosition Copy => new BallPosition(planet, relativePos);
 
-		public Vector3 Position => planet.transform.TransformPoint(relativePos);
+		public Vector3 Position => planet.transform.position + relativePos;
 	}
 }

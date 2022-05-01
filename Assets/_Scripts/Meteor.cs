@@ -3,16 +3,15 @@ using UnityEngine;
 
 public class Meteor : MonoBehaviour
 {
+	private const float DESTROY_TIME = 5f;
+
 	private void Start()
 	{
-		InvokeRepeating("CheckOutOfBounds", 3, 3);
+		Invoke("Destroy", DESTROY_TIME);
 	}
 
-	public void CheckOutOfBounds()
+	public void Destroy()
 	{
-		if (LevelController.instance.OutOfLevelBounds(transform))
-		{
-			Destroy(gameObject);
-		}
+		Destroy(gameObject);
 	}
 }

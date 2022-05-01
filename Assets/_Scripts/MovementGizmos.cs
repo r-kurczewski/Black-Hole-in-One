@@ -21,8 +21,6 @@ public class MovementGizmos : MonoBehaviour
 		Gizmos.DrawLine(transform.position, transform.position + rb.velocity * gizmoMultiplier);
 		Gizmos.color = Color.yellow;
 		Gizmos.DrawLine(transform.position, transform.position + acceleration * gizmoMultiplier);
-		Gizmos.color = Color.green;
-		Gizmos.DrawLine(transform.position, 2* transform.position - planet?.transform.position ?? Vector3.zero);
 			
 	}
 

@@ -4,22 +4,42 @@ using UnityEngine;
 
 public class Planet : GravitySource
 {
-    [SerializeField]
-    private bool _destroysBall;
+	[SerializeField]
+	private bool _destroysBall;
 
-    [SerializeField]
-    private bool _ballCheckpoint;
+	[SerializeField]
+	private bool _ballCheckpoint;
 
-    public bool DestroysBall => _destroysBall;
+	[SerializeField]
+	private float rotationSpeed = 0.05f;
 
-    public bool BallCheckpoint => _ballCheckpoint;
+	[SerializeField]
+	private bool clockwise;
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        bool ballCollision = collision.gameObject == LevelController.instance.Ball.gameObject;
-        if (DestroysBall && ballCollision)
-        {
-            LevelController.instance.Lose();
-        }
-    }
+	private Rigidbody rb;
+
+	public bool DestroysBall => _destroysBall;
+
+	public bool BallCheckpoint => _ballCheckpoint;
+
+	private void Start()
+	{
+		rb = GetComponent<Rigidbody>();
+	}
+
+
+	private void OnCollisionEnter(Collision collision)
+	{
+		bool ballCollision = collision.gameObject == LevelController.instance.Ball.gameObject;
+		if (DestroysBall && ballCollision)
+		{
+			LevelController.instance.Lose();
+		}
+	}
+
+	private new void FixedUpdate()
+	{
+		base.FixedUpdate();
+		rb.MoveRotation(Quaternion.Euler(0, Time.fixedDeltaTime * rotationSpeed, 0) * rb.rotation);
+	}
 }
