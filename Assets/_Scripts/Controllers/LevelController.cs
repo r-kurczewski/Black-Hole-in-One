@@ -152,6 +152,8 @@ public class LevelController : MonoBehaviour
 
 	private void OnDrawGizmos()
 	{
+		#if UNITY_EDITOR
 		Handles.DrawWireDisc(transform.position, Vector3.forward, levelBounds);
+		#endif
 	}
 }

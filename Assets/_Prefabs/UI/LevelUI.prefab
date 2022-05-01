@@ -106,7 +106,7 @@ GameObject:
   - component: {fileID: 1559587688538183860}
   - component: {fileID: 2303953554966101270}
   m_Layer: 5
-  m_Name: Speed
+  m_Name: Controls
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -161,7 +161,7 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'Drag ball to hit
 
-    {ESC] Menu
+    [M] [ESC] Menu
 
     [C] Change camera
 
