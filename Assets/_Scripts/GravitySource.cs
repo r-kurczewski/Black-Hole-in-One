@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -8,7 +9,21 @@ public class GravitySource : MonoBehaviour
 	[SerializeField][FormerlySerializedAs("gravity")]
 	private float _gravity;
 
+	private Rigidbody[] gravityTargets;
+
 	public float Gravity => _gravity;
+
+	private void Awake()
+	{
+		UpdateGravityTargets();
+	}
+
+	private void UpdateGravityTargets()
+	{
+		gravityTargets = GameObject.FindGameObjectsWithTag("GravityTarget")
+			.Select(x=> x.GetComponent<Rigidbody>())
+			.ToArray();
+	}
 
 	public void ApplyGravity(Rigidbody target)
 	{
@@ -22,9 +37,9 @@ public class GravitySource : MonoBehaviour
 	}
 	protected void FixedUpdate()
 	{
-		foreach (var target in GameObject.FindGameObjectsWithTag("GravityTarget"))
+		foreach (var target in gravityTargets)
 		{
-			ApplyGravity(target.GetComponent<Rigidbody>());
+			ApplyGravity(target);
 		}
 	}
 }
