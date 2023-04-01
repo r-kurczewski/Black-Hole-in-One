@@ -9,14 +9,10 @@ public class GravitySource : MonoBehaviour
 	[SerializeField][FormerlySerializedAs("gravity")]
 	private float _gravity;
 
+	[SerializeField]
 	private Rigidbody[] gravityTargets;
 
 	public float Gravity => _gravity;
-
-	private void Awake()
-	{
-		UpdateGravityTargets();
-	}
 
 	private void UpdateGravityTargets()
 	{
@@ -37,6 +33,7 @@ public class GravitySource : MonoBehaviour
 	}
 	protected void FixedUpdate()
 	{
+		UpdateGravityTargets();
 		foreach (var target in gravityTargets)
 		{
 			ApplyGravity(target);

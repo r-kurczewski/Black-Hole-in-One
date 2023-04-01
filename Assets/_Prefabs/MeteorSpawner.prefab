@@ -45,5 +45,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   meteorPrefab: {fileID: 7221640545878684502, guid: 4f60869bebe73cc42b76a29601695d63, type: 3}
   endPosition: {x: 7, y: -12.5, z: 0}
-  delay: 2
+  interval: 1
+  startDelay: 0
   meteorSpeed: 140

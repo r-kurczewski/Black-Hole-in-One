@@ -431,7 +431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3385332961796609898, guid: 76840f7789b7bff4dabe41eb951e9580, type: 3}
       propertyPath: _ballCheckpoint
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3576623778247334242, guid: 76840f7789b7bff4dabe41eb951e9580, type: 3}
       propertyPath: value
@@ -1081,7 +1081,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3385332961796609898, guid: 76840f7789b7bff4dabe41eb951e9580, type: 3}
       propertyPath: _ballCheckpoint
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3576623778247334242, guid: 76840f7789b7bff4dabe41eb951e9580, type: 3}
       propertyPath: value
